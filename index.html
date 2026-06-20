@@ -1,31 +1,96 @@
-<body style="text-align:center; font-family:Arial; background-color:#f2f2f2;">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Helping Poor People App</title>
+</head>
 
-<h1>Helping Poor People 🤝</h1>
+<body style="font-family:Arial; text-align:center; background:#e6f7ff;">
 
-<p>Donate and help someone in need</p>
+<!-- 🔐 LOGIN PAGE -->
+<div id="loginPage" style="margin-top:100px;">
+    <h2>Login 🔐</h2>
 
-<input id="amount" placeholder="Enter amount" style="padding:10px;">
+    <input id="name" placeholder="Enter your name"
+    style="padding:10px; width:200px;">
 
-<br><br>
+    <br><br>
 
-<button onclick="donate()" style="padding:10px 20px; background:green; color:white;">
-Donate
-</button>
+    <button onclick="login()"
+    style="padding:10px 20px; background:blue; color:white;">
+        Login
+    </button>
 
-<p id="msg"></p>
+    <p id="loginMsg"></p>
+</div>
+
+<!-- 💰 MAIN APP -->
+<div id="appPage" style="display:none; margin-top:50px;">
+
+    <h2>Helping Poor People 🤝</h2>
+
+    <p>Welcome, <span id="userName"></span></p>
+
+    <input id="amount" placeholder="Enter donation amount"
+    style="padding:10px; width:200px;">
+
+    <br><br>
+
+    <button onclick="donate()"
+    style="padding:10px 20px; background:green; color:white;">
+        Donate
+    </button>
+
+    <p id="msg"></p>
+
+    <!-- 🎉 THANK YOU MESSAGE -->
+    <div id="thankYou" style="
+        display:none;
+        margin-top:20px;
+        padding:10px;
+        background:#d4edda;
+        color:#155724;
+        border-radius:10px;">
+        🎉 Thank you for your donation!
+    </div>
+
+</div>
 
 <script>
+
+// 🔐 LOGIN FUNCTION
+function login() {
+    let name = document.getElementById("name").value;
+
+    if(name === "") {
+        document.getElementById("loginMsg").innerText =
+        "Please enter your name ❗";
+    } else {
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("appPage").style.display = "block";
+        document.getElementById("userName").innerText = name;
+    }
+}
+
+// 💰 DONATE FUNCTION
 function donate() {
     let amount = document.getElementById("amount").value;
 
     if(amount === "") {
         document.getElementById("msg").innerText =
         "Please enter amount ❗";
+
+        document.getElementById("thankYou").style.display = "none";
     } else {
         document.getElementById("msg").innerText =
-        "Thank you for donating ₹" + amount + " ❤️";
+        "You donated ₹" + amount;
+
+        // 🎉 SHOW THANK YOU MESSAGE
+        document.getElementById("thankYou").style.display = "block";
     }
 }
+
 </script>
 
 </body>
+</html>
+
