@@ -1,133 +1,161 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Helping Hands</title>
+  <title>Helping Hands AI</title>
   <style>
     body { font-family: Arial; margin: 20px; }
-    .tab { display: none; }
+    .page { display: none; }
     .active { display: block; }
-    button { margin: 5px; padding: 8px; }
-    input { margin: 5px; padding: 6px; }
+    input, button { margin: 5px; padding: 8px; }
     .card { border: 1px solid #333; padding: 10px; margin: 10px 0; }
   </style>
 </head>
 <body>
 
-<h1>🤝 Helping Hands</h1>
+<h1>🤝 Helping Hands AI</h1>
 
-<!-- NAV BUTTONS -->
-<button onclick="showTab('home')">Home</button>
-<button onclick="showTab('login')">Login/Signup</button>
-<button onclick="showTab('request')">Post Request</button>
-<button onclick="showTab('dashboard')">Dashboard</button>
+<!-- LOGIN PAGE -->
+<div id="login" class="page active">
+  <h2>Login / Register</h2>
 
-<hr>
+  <input id="name" placeholder="Enter Name"><br>
+  <input id="phone" placeholder="Enter Mobile Number"><br>
 
-<!-- HOME -->
-<div id="home" class="tab active">
-  <h2>Welcome</h2>
-  <p>Helping Hands connects people who need help with people who can help.</p>
-</div>
+  <button onclick="sendOTP()">Send OTP</button>
 
-<!-- LOGIN -->
-<div id="login" class="tab">
-  <h2>Login</h2>
-  <input id="loginUser" placeholder="Username"><br>
-  <input id="loginPass" type="password" placeholder="Password"><br>
-  <button onclick="login()">Login</button>
-
-  <hr>
-
-  <h2>Signup</h2>
-  <input id="signupUser" placeholder="Username"><br>
-  <input id="signupPass" type="password" placeholder="Password"><br>
-  <button onclick="signup()">Signup</button>
-</div>
-
-<!-- REQUEST -->
-<div id="request" class="tab">
-  <h2>Post Help Request</h2>
-  <input id="name" placeholder="Your Name"><br>
-  <input id="need" placeholder="Blood / Help Type"><br>
-  <input id="location" placeholder="Location"><br>
-  <button onclick="submitRequest()">Submit</button>
+  <div id="otpBox" style="display:none;">
+    <input id="otp" placeholder="Enter OTP"><br>
+    <button onclick="verifyOTP()">Verify</button>
+  </div>
 </div>
 
 <!-- DASHBOARD -->
-<div id="dashboard" class="tab">
-  <h2>All Requests</h2>
-  <div id="list"></div>
+<div id="dashboard" class="page">
+  <h2>🌍 Helping Poor People Dashboard</h2>
+
+  <p id="userInfo"></p>
+
+  <h3>📊 AI Analysis (Demo Pie Chart)</h3>
+
+  <canvas id="chart" width="300" height="300"></canvas>
+
+  <div class="card">
+    <h3>🏠 Nearby Orphanages</h3>
+    <p>1. Hope Orphanage - 2 km</p>
+    <p>2. Little Stars Home - 4 km</p>
+    <p>3. Sunshine Care - 6 km</p>
+  </div>
+
+  <div class="card">
+    <h3>👶 People in Need (AI Data)</h3>
+    <p>Orphan Children: 120</p>
+    <p>Beggers: 45</p>
+    <p>Elderly Poor: 78</p>
+  </div>
+
+  <div class="card">
+    <h3>💰 Donate Money</h3>
+
+    <select id="person">
+      <option>Child A</option>
+      <option>Old Man B</option>
+      <option>Family C</option>
+    </select>
+
+    <input id="amount" placeholder="Amount"><br>
+    <button onclick="donate()">Donate</button>
+  </div>
+
+  <h3>📜 Donation History</h3>
+  <div id="history"></div>
+
+  <button onclick="thankYou()">Finish</button>
+</div>
+
+<!-- THANK YOU PAGE -->
+<div id="thankyou" class="page">
+  <h1>🙏 Thank You for Your Support!</h1>
+  <p>You helped change a life ❤️</p>
 </div>
 
 <script>
-/* ---------- TAB SWITCH ---------- */
-function showTab(tab) {
-  let tabs = document.querySelectorAll(".tab");
-  tabs.forEach(t => t.classList.remove("active"));
-  document.getElementById(tab).classList.add("active");
+let user = "";
+let otpCode = "";
 
-  if (tab === "dashboard") loadRequests();
+/* LOGIN + OTP (FAKE DEMO) */
+function sendOTP() {
+  user = document.getElementById("name").value;
+  let phone = document.getElementById("phone").value;
+
+  if (!user || !phone) return alert("Enter details");
+
+  otpCode = "1234"; // demo OTP
+
+  alert("OTP sent to " + phone + " (Demo OTP = 1234)");
+
+  document.getElementById("otpBox").style.display = "block";
 }
 
-/* ---------- LOGIN / SIGNUP (LOCAL STORAGE) ---------- */
-function signup() {
-  let u = document.getElementById("signupUser").value;
-  let p = document.getElementById("signupPass").value;
+function verifyOTP() {
+  let otp = document.getElementById("otp").value;
 
-  if (!u || !p) return alert("Fill all fields");
-
-  localStorage.setItem("user_" + u, p);
-  alert("Signup successful!");
-}
-
-function login() {
-  let u = document.getElementById("loginUser").value;
-  let p = document.getElementById("loginPass").value;
-
-  let stored = localStorage.getItem("user_" + u);
-
-  if (stored === p) {
-    alert("Login successful!");
+  if (otp === otpCode) {
+    showDashboard();
   } else {
-    alert("Invalid credentials");
+    alert("Wrong OTP");
   }
 }
 
-/* ---------- SUBMIT REQUEST ---------- */
-function submitRequest() {
-  let name = document.getElementById("name").value;
-  let need = document.getElementById("need").value;
-  let location = document.getElementById("location").value;
+/* SHOW DASHBOARD */
+function showDashboard() {
+  document.getElementById("login").classList.remove("active");
+  document.getElementById("dashboard").classList.add("active");
 
-  if (!name || !need || !location) {
-    return alert("Fill all fields");
-  }
+  document.getElementById("userInfo").innerText =
+    "Welcome " + user + " | Location: Kochi";
 
-  let data = JSON.parse(localStorage.getItem("requests") || "[]");
-
-  data.push({ name, need, location });
-
-  localStorage.setItem("requests", JSON.stringify(data));
-
-  alert("Request submitted!");
+  drawChart();
 }
 
-/* ---------- LOAD REQUESTS ---------- */
-function loadRequests() {
-  let data = JSON.parse(localStorage.getItem("requests") || "[]");
-  let list = document.getElementById("list");
+/* SIMPLE PIE CHART */
+function drawChart() {
+  let c = document.getElementById("chart");
+  let ctx = c.getContext("2d");
 
-  list.innerHTML = "";
+  let data = [50, 20, 30]; // orphan, beggar, old
+  let colors = ["red", "blue", "green"];
 
-  data.forEach(r => {
-    list.innerHTML += `
-      <div class="card">
-        <b>Name:</b> ${r.name}<br>
-        <b>Need:</b> ${r.need}<br>
-        <b>Location:</b> ${r.location}
-      </div>
-    `;
-  });
+  let total = data.reduce((a,b)=>a+b,0);
+  let start = 0;
+
+  for (let i=0;i<data.length;i++) {
+    let slice = (data[i]/total)*2*Math.PI;
+
+    ctx.beginPath();
+    ctx.moveTo(150,150);
+    ctx.arc(150,150,100,start,start+slice);
+    ctx.fillStyle = colors[i];
+    ctx.fill();
+
+    start += slice;
+  }
+}
+
+/* DONATION SYSTEM */
+function donate() {
+  let person = document.getElementById("person").value;
+  let amount = document.getElementById("amount").value;
+
+  if (!amount) return alert("Enter amount");
+
+  let div = document.getElementById("history");
+  div.innerHTML += "<p>💸 Donated ₹" + amount + " to " + person + "</p>";
+}
+
+/* THANK YOU PAGE */
+function thankYou() {
+  document.getElementById("dashboard").classList.remove("active");
+  document.getElementById("thankyou").classList.add("active");
 }
 </script>
 
