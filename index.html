@@ -1,154 +1,134 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Helping Poor People App</title>
+  <title>Helping Hands</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    .tab { display: none; }
+    .active { display: block; }
+    button { margin: 5px; padding: 8px; }
+    input { margin: 5px; padding: 6px; }
+    .card { border: 1px solid #333; padding: 10px; margin: 10px 0; }
+  </style>
 </head>
+<body>
 
-<body style="font-family:Arial; text-align:center; background:#f0f8ff;">
+<h1>🤝 Helping Hands</h1>
 
-<!-- 🔐 LOGIN -->
-<div id="loginPage" style="margin-top:80px;">
-    <h2>Login 🔐</h2>
+<!-- NAV BUTTONS -->
+<button onclick="showTab('home')">Home</button>
+<button onclick="showTab('login')">Login/Signup</button>
+<button onclick="showTab('request')">Post Request</button>
+<button onclick="showTab('dashboard')">Dashboard</button>
 
-    <input id="name" placeholder="Enter your name"
-    style="padding:10px; width:200px;">
+<hr>
 
-    <br><br>
-
-    <button onclick="login()"
-    style="padding:10px 20px; background:blue; color:white;">
-        Login
-    </button>
-
-    <p id="loginMsg"></p>
+<!-- HOME -->
+<div id="home" class="tab active">
+  <h2>Welcome</h2>
+  <p>Helping Hands connects people who need help with people who can help.</p>
 </div>
 
-<!-- 💰 MAIN APP -->
-<div id="appPage" style="display:none;">
+<!-- LOGIN -->
+<div id="login" class="tab">
+  <h2>Login</h2>
+  <input id="loginUser" placeholder="Username"><br>
+  <input id="loginPass" type="password" placeholder="Password"><br>
+  <button onclick="login()">Login</button>
 
-    <h2>Helping Poor People 🤝</h2>
+  <hr>
 
-    <p>Welcome, <span id="userName"></span></p>
+  <h2>Signup</h2>
+  <input id="signupUser" placeholder="Username"><br>
+  <input id="signupPass" type="password" placeholder="Password"><br>
+  <button onclick="signup()">Signup</button>
+</div>
 
-    <!-- 👥 CATEGORY SELECT -->
-    <h3>Select Category</h3>
+<!-- REQUEST -->
+<div id="request" class="tab">
+  <h2>Post Help Request</h2>
+  <input id="name" placeholder="Your Name"><br>
+  <input id="need" placeholder="Blood / Help Type"><br>
+  <input id="location" placeholder="Location"><br>
+  <button onclick="submitRequest()">Submit</button>
+</div>
 
-    <select id="category" style="padding:10px;">
-        <option value="beggar">🧍 Beggars</option>
-        <option value="child">👶 Children</option>
-        <option value="old">👴 Old People</option>
-    </select>
-
-    <br><br>
-
-    <!-- 📊 LIVE COUNTERS -->
-    <h3>Live Report 📊</h3>
-
-    <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
-
-        <div style="background:white; padding:15px; width:150px; border-radius:10px;">
-            <h4>Beggars</h4>
-            <h2 id="beggar">0</h2>
-        </div>
-
-        <div style="background:white; padding:15px; width:150px; border-radius:10px;">
-            <h4>Children</h4>
-            <h2 id="child">0</h2>
-        </div>
-
-        <div style="background:white; padding:15px; width:150px; border-radius:10px;">
-            <h4>Old People</h4>
-            <h2 id="old">0</h2>
-        </div>
-
-    </div>
-
-    <br>
-
-    <!-- 💰 DONATION -->
-    <input id="amount" placeholder="Enter donation amount"
-    style="padding:10px; width:200px;">
-
-    <br><br>
-
-    <button onclick="donate()"
-    style="padding:10px 20px; background:green; color:white;">
-        Donate
-    </button>
-
-    <p id="msg"></p>
-
-    <!-- 🎉 THANK YOU -->
-    <div id="thankYou" style="
-        display:none;
-        margin-top:20px;
-        padding:10px;
-        background:#d4edda;
-        color:#155724;
-        border-radius:10px;">
-        🎉 Thank you for your donation!
-    </div>
-
+<!-- DASHBOARD -->
+<div id="dashboard" class="tab">
+  <h2>All Requests</h2>
+  <div id="list"></div>
 </div>
 
 <script>
+/* ---------- TAB SWITCH ---------- */
+function showTab(tab) {
+  let tabs = document.querySelectorAll(".tab");
+  tabs.forEach(t => t.classList.remove("active"));
+  document.getElementById(tab).classList.add("active");
 
-// 🔐 LOGIN
+  if (tab === "dashboard") loadRequests();
+}
+
+/* ---------- LOGIN / SIGNUP (LOCAL STORAGE) ---------- */
+function signup() {
+  let u = document.getElementById("signupUser").value;
+  let p = document.getElementById("signupPass").value;
+
+  if (!u || !p) return alert("Fill all fields");
+
+  localStorage.setItem("user_" + u, p);
+  alert("Signup successful!");
+}
+
 function login() {
-    let name = document.getElementById("name").value;
+  let u = document.getElementById("loginUser").value;
+  let p = document.getElementById("loginPass").value;
 
-    if(name === "") {
-        document.getElementById("loginMsg").innerText =
-        "Please enter name ❗";
-    } else {
-        document.getElementById("loginPage").style.display = "none";
-        document.getElementById("appPage").style.display = "block";
-        document.getElementById("userName").innerText = name;
+  let stored = localStorage.getItem("user_" + u);
 
-        startCounters();
-    }
+  if (stored === p) {
+    alert("Login successful!");
+  } else {
+    alert("Invalid credentials");
+  }
 }
 
-// 💰 DONATE
-function donate() {
-    let amount = document.getElementById("amount").value;
+/* ---------- SUBMIT REQUEST ---------- */
+function submitRequest() {
+  let name = document.getElementById("name").value;
+  let need = document.getElementById("need").value;
+  let location = document.getElementById("location").value;
 
-    if(amount === "") {
-        document.getElementById("msg").innerText =
-        "Enter amount ❗";
-        document.getElementById("thankYou").style.display = "none";
-    } else {
-        document.getElementById("msg").innerText =
-        "You donated ₹" + amount;
+  if (!name || !need || !location) {
+    return alert("Fill all fields");
+  }
 
-        document.getElementById("thankYou").style.display = "block";
+  let data = JSON.parse(localStorage.getItem("requests") || "[]");
 
-        setTimeout(() => {
-            document.getElementById("thankYou").style.display = "none";
-        }, 2000);
-    }
+  data.push({ name, need, location });
+
+  localStorage.setItem("requests", JSON.stringify(data));
+
+  alert("Request submitted!");
 }
 
-// 📊 LIVE COUNTERS
-function startCounter(id, target) {
-    let count = 0;
+/* ---------- LOAD REQUESTS ---------- */
+function loadRequests() {
+  let data = JSON.parse(localStorage.getItem("requests") || "[]");
+  let list = document.getElementById("list");
 
-    let interval = setInterval(() => {
-        count++;
-        document.getElementById(id).innerText = count;
+  list.innerHTML = "";
 
-        if(count >= target) {
-            clearInterval(interval);
-        }
-    }, 5);
+  data.forEach(r => {
+    list.innerHTML += `
+      <div class="card">
+        <b>Name:</b> ${r.name}<br>
+        <b>Need:</b> ${r.need}<br>
+        <b>Location:</b> ${r.location}
+      </div>
+    `;
+  });
 }
-
-function startCounters() {
-    startCounter("beggar", 850);
-    startCounter("child", 2500);
-    startCounter("old", 1200);
-}
-
 </script>
 
 </body>
