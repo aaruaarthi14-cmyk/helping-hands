@@ -1,1 +1,31 @@
+<body style="text-align:center; font-family:Arial; background-color:#f2f2f2;">
 
+<h1>Helping Poor People 🤝</h1>
+
+<p>Donate and help someone in need</p>
+
+<input id="amount" placeholder="Enter amount" style="padding:10px;">
+
+<br><br>
+
+<button onclick="donate()" style="padding:10px 20px; background:green; color:white;">
+Donate
+</button>
+
+<p id="msg"></p>
+
+<script>
+function donate() {
+    let amount = document.getElementById("amount").value;
+
+    if(amount === "") {
+        document.getElementById("msg").innerText =
+        "Please enter amount ❗";
+    } else {
+        document.getElementById("msg").innerText =
+        "Thank you for donating ₹" + amount + " ❤️";
+    }
+}
+</script>
+
+</body>
